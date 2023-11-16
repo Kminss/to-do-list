@@ -73,7 +73,9 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    private static final String[] WHITE_LIST_URL = {"/api/v1/auth/**",
+    private static final String[] WHITE_LIST_URL = {
+            "/api/v1/auth/**",
+            "/api/v1/member/signup",
             "/v1/api-docs/**",
             "/v2/api-docs",
             "/v3/api-docs",
