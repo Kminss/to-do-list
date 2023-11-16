@@ -45,3 +45,5 @@ springdoc:
     doc-expansion: none
   paths-to-match:
     - /api/**
+
+jwt.secret.key: cHRrUVFSclNhUVRTWmJ0R2hLY1VaLTE5ajIyVTFyZUcxU2ZuNFR1d1plVDVFZTItVzI1ZWZOU3Q4QTM=
