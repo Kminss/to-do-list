@@ -5,16 +5,14 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sparta.todo.domain.constant.MemberRole;
 import com.sparta.todo.dto.request.LoginRequest;
+import com.sparta.todo.dto.request.LoginResponse;
 import com.sparta.todo.dto.response.ErrorResponse;
-import com.sparta.todo.exception.ApiException;
-import com.sparta.todo.exception.ErrorCode;
 import com.sparta.todo.security.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -61,14 +59,16 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         String token = jwtProvider.createToken(username, role);
         jwtProvider.setHeaderToken(token, response);
+
+        setResponseConfig(response);
+        objectMapper.writeValue(response.getWriter(), LoginResponse.of());
     }
+
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         log.info("로그인 인증 실패");
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding("utf-8");
-        response.setStatus(UNAUTHORIZED_MEMBER.getHttpStatus().value());
+        setResponseConfig(response);
         objectMapper
                 .registerModule(new JavaTimeModule())
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
@@ -79,5 +79,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                 .message(UNAUTHORIZED_MEMBER.getDetail())
                                 .build()
                 );
+    }
+
+    private void setResponseConfig(HttpServletResponse response) {
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("utf-8");
+        response.setStatus(UNAUTHORIZED_MEMBER.getHttpStatus().value());
     }
 }

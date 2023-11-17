@@ -1,5 +1,6 @@
 package com.sparta.todo.domain;
 
+import com.sparta.todo.domain.constant.MemberRole;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,4 +19,20 @@ public class Member extends BaseEntity{
     @Column(name = "password")
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    private MemberRole role;
+
+    private Member(String username, String password, MemberRole role) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.createdBy = username;
+        this.modifiedBy = username;
+
+    }
+
+    public static Member of(String username, String password) {
+        return new Member(username, password, MemberRole.USER);
+    }
 }
