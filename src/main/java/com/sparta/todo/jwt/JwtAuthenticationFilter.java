@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sparta.todo.domain.constant.MemberRole;
 import com.sparta.todo.dto.request.LoginRequest;
-import com.sparta.todo.dto.request.LoginResponse;
+import com.sparta.todo.dto.response.LoginResponse;
 import com.sparta.todo.dto.response.ErrorResponse;
 import com.sparta.todo.security.CustomUserDetails;
 import jakarta.servlet.FilterChain;
@@ -55,7 +55,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         log.info("로그인 인증 성공");
         String username = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
-        MemberRole role = ((CustomUserDetails) authentication.getPrincipal()).getMember().getRole();
+        MemberRole role = ((CustomUserDetails) authentication.getPrincipal()).getMemberDto().role();
 
         String token = jwtProvider.createToken(username, role);
         jwtProvider.setHeaderToken(token, response);

@@ -1,7 +1,7 @@
 package com.sparta.todo.security;
 
-import com.sparta.todo.domain.Member;
 import com.sparta.todo.domain.constant.MemberRole;
+import com.sparta.todo.dto.MemberDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,29 +10,26 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class CustomUserDetails implements UserDetails {
-    private final Member member;
+    private final MemberDto memberDto;
 
-    public CustomUserDetails(Member member) {
-        this.member = member;
+    public CustomUserDetails(MemberDto memberDto) {
+        this.memberDto = memberDto;
     }
 
-    public Member getMember() {
-        return member;
-    }
 
     @Override
     public String getPassword() {
-        return member.getPassword();
+        return memberDto.password();
     }
 
     @Override
     public String getUsername() {
-        return member.getUsername();
+        return memberDto.username();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        MemberRole role = member.getRole();
+        MemberRole role = memberDto.role();
         String authority = role.getAuthority();
 
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority);
@@ -62,4 +59,7 @@ public class CustomUserDetails implements UserDetails {
         return true;
     }
 
+    public MemberDto getMemberDto() {
+        return memberDto;
+    }
 }
