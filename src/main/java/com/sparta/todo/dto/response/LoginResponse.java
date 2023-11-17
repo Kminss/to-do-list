@@ -1,4 +1,4 @@
-package com.sparta.todo.dto.request;
+package com.sparta.todo.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
