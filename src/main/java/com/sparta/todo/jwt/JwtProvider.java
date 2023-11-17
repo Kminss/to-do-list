@@ -69,10 +69,9 @@ public class JwtProvider {
     }
 
     // 토큰 검증
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            return true;
         } catch (SecurityException | MalformedJwtException e) {
             logger.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
         } catch (ExpiredJwtException e) {
@@ -82,7 +81,6 @@ public class JwtProvider {
         } catch (IllegalArgumentException e) {
             logger.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
         }
-        return false;
     }
 
     // 토큰에서 사용자 정보 가져오기
@@ -95,10 +93,18 @@ public class JwtProvider {
     }
 
     // HttpServletRequest 에서 Cookie Value : JWT 가져오기
-    public String getTokenFromRequest(HttpServletRequest req) {
+    public String getTokenFromRequestHeader(HttpServletRequest req) {
+        String tokenValue = req.getHeader(AUTHORIZATION_HEADER);
+        if (!StringUtils.hasText(tokenValue)) {
+            return null;
+        }
+        // JWT 토큰 substring
+        tokenValue = substringToken(tokenValue);
+        validateToken(tokenValue);
 
-        return null;
+        return tokenValue;
     }
+
 
     public void setHeaderToken(String token, HttpServletResponse response) {
         response.setHeader(AUTHORIZATION_HEADER, token);
