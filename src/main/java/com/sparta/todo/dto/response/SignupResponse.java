@@ -10,7 +10,7 @@ public record SignupResponse(
         )
         String message
 ) {
-    public static SignupResponse of () {
-        return new SignupResponse("회원가입에 성공하였습니다.");
+    public static SignupResponse of (String message) {
+        return new SignupResponse(message);
     }
 }
