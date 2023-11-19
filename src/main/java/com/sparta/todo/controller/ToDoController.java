@@ -4,9 +4,8 @@ import com.sparta.todo.annotaion.CurrentMember;
 import com.sparta.todo.dto.MemberDto;
 import com.sparta.todo.dto.request.CreateToDoRequest;
 import com.sparta.todo.dto.request.UpdateToDoRequest;
-import com.sparta.todo.dto.response.CreateToDoResponse;
+import com.sparta.todo.dto.response.ToDoResponse;
 import com.sparta.todo.dto.response.ErrorResponse;
-import com.sparta.todo.dto.response.UpdateToDoResponse;
 import com.sparta.todo.service.ToDoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -46,6 +45,27 @@ public class ToDoController {
     @PostMapping("/todos")
     public ResponseEntity<ToDoResponse> createToDo(@RequestBody CreateToDoRequest request, @CurrentMember MemberDto memberDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(toDoService.createToDo(request, memberDto));
+    }
+
+    @Operation(summary = "할 일 조회", description = "할 일 조회 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "할 일 조회 성공",
+                    content = @Content(schema = @Schema(implementation = ToDoResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "조회할 할 일이 없는 경우",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            )
+    })
+    @GetMapping("/{toDoId}")
+    public ResponseEntity<ToDoResponse> getToDo(
+            @Parameter(description = "할 일 ID", in = ParameterIn.PATH)
+            @PathVariable(value = "toDoId") Long toDoId
+    ) {
+        return ResponseEntity.ok(toDoService.getToDo(toDoId));
     }
 
     @Operation(summary = "할 일 수정", description = "할 일 수정 API")

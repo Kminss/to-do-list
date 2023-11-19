@@ -50,4 +50,10 @@ public class ToDoService {
         }
     }
 
+    public ToDoResponse getToDo(Long toDoId) {
+        ToDo toDo = toDoRepository.findById(toDoId)
+                .orElseThrow(ToDoNotFoundException::new);
+
+        return ToDoResponse.from(toDo);
+    }
 }
