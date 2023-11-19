@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
+@Schema(description = "회원가입 요청")
 public record SignupRequest(
         @Schema(description = "로그인 아이디", nullable = false, example = "username12")
         @Pattern(
