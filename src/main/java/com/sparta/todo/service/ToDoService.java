@@ -4,8 +4,12 @@ import com.sparta.todo.domain.Member;
 import com.sparta.todo.domain.ToDo;
 import com.sparta.todo.dto.MemberDto;
 import com.sparta.todo.dto.request.CreateToDoRequest;
+import com.sparta.todo.dto.request.UpdateToDoRequest;
 import com.sparta.todo.dto.response.CreateToDoResponse;
+import com.sparta.todo.dto.response.UpdateToDoResponse;
+import com.sparta.todo.exception.AccessDeniedException;
 import com.sparta.todo.exception.MemberNotFoundException;
+import com.sparta.todo.exception.ToDoNotFoundException;
 import com.sparta.todo.repository.MemberRepository;
 import com.sparta.todo.repository.ToDoRepository;
 import org.springframework.stereotype.Service;
@@ -31,5 +35,20 @@ public class ToDoService {
         return CreateToDoResponse.from(todo);
     }
 
+    public UpdateToDoResponse updateToDo(Long toDoId, UpdateToDoRequest request, MemberDto memberDto) {
+        ToDo toDo = toDoRepository.findById(toDoId)
+                .orElseThrow(ToDoNotFoundException::new);
+
+        checkMember(toDo.getMember().getId(), memberDto.id());
+        toDo.update(request);
+
+        return UpdateToDoResponse.from(toDo);
+    }
+
+    private void checkMember(Long writeMemberId, Long currentMemberId) {
+        if (!writeMemberId.equals(currentMemberId)) {
+            throw new AccessDeniedException("해당 ToDo에 대한 권한이 없습니다.");
+        }
+    }
 
 }
