@@ -11,7 +11,7 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "todo")
 @Entity
-public class Todo extends BaseEntity{
+public class ToDo extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;

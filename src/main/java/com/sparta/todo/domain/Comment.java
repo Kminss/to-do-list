@@ -19,7 +19,7 @@ public class Comment extends BaseEntity{
     private Member member;
 
     @ManyToOne
-    private Todo todo;
+    private ToDo todo;
 
     @Column(name = "content", length = 500)
     private String content;

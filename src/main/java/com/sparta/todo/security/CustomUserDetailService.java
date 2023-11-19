@@ -1,6 +1,6 @@
 package com.sparta.todo.security;
 
-import com.sparta.todo.domain.Member;
+import com.sparta.todo.dto.MemberDto;
 import com.sparta.todo.repository.MemberRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,9 +17,10 @@ public class CustomUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Member member = memberRepository.findByUsername(username)
+        MemberDto memberDto = memberRepository.findByUsername(username)
+                .map(MemberDto::from)
                 .orElseThrow(() -> new UsernameNotFoundException("회원을 찾을 수 없습니다. " + username));
 
-        return new CustomUserDetails(member);
+        return new CustomUserDetails(memberDto);
     }
 }
