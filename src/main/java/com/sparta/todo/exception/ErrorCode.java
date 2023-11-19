@@ -25,7 +25,7 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND(NOT_FOUND, "해당 유저 정보를 찾을 수 없습니다"),
     REFRESH_TOKEN_NOT_FOUND(NOT_FOUND, "로그아웃 된 사용자입니다"),
     VALUE_NOT_FOUND(NOT_FOUND, "요청한 값을 찾을 수 없습니다."),
-    POST_NOT_FOUND(NOT_FOUND, "할 일을 찾을 수 없습니다."),
+    TO_DO_NOT_FOUND(NOT_FOUND, "할 일을 찾을 수 없습니다."),
     COMMENT_NOT_FOUND(NOT_FOUND, "댓글을 찾을 수 없습니다."),
 
     /* 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */

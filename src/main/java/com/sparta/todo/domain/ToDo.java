@@ -1,5 +1,6 @@
 package com.sparta.todo.domain;
 
+import com.sparta.todo.dto.request.UpdateToDoRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -37,4 +38,20 @@ public class ToDo extends BaseEntity{
             mappedBy = "todo")
     private Set<Comment> comments = new LinkedHashSet<>();
 
+
+    public ToDo(String title, String content, Member member) {
+        this.title = title;
+        this.content = content;
+        this.member = member;
+    }
+
+    public static ToDo of(String title, String content, Member member) {
+        return new ToDo(title, content, member);
+    }
+
+
+    public void update(UpdateToDoRequest request) {
+        this.title = request.title();
+        this.content = request.content();
+    }
 }
