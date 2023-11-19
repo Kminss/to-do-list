@@ -50,5 +50,8 @@ public class ToDo extends BaseEntity{
     }
 
 
-
+    public void update(UpdateToDoRequest request) {
+        this.title = request.title();
+        this.content = request.content();
+    }
 }
