@@ -1,8 +1,8 @@
 package com.sparta.todo.controller;
 
 import com.sparta.todo.dto.request.SignupRequest;
-import com.sparta.todo.dto.request.SignupResponse;
 import com.sparta.todo.dto.response.ErrorResponse;
+import com.sparta.todo.dto.response.SignupResponse;
 import com.sparta.todo.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "회원 API 컨트롤러", description = "회원 API")
+@Tag(name = "회원 API", description = "회원 API")
 @RequestMapping("/api/v1")
 @RestController
 public class MemberController {
@@ -42,7 +42,9 @@ public class MemberController {
     })
     @PostMapping("/member/signup")
     public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(memberService.signup(request));
-    }
+        memberService.signup(request);
 
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(SignupResponse.of("회원가입에 성공하였습니다."));
+    }
 }
