@@ -60,13 +60,15 @@ public class ToDoController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    @GetMapping("/{toDoId}")
+    @GetMapping("/todos/{toDoId}")
     public ResponseEntity<ToDoResponse> getToDo(
             @Parameter(description = "할 일 ID", in = ParameterIn.PATH)
             @PathVariable(value = "toDoId") Long toDoId
     ) {
         return ResponseEntity.ok(toDoService.getToDo(toDoId));
     }
+
+
 
     @Operation(summary = "할 일 수정", description = "할 일 수정 API")
     @ApiResponses(value = {
@@ -91,7 +93,37 @@ public class ToDoController {
             @Parameter(description = "할 일 ID", in = ParameterIn.PATH)
             @PathVariable(value = "toDoId") Long toDoId,
             @RequestBody UpdateToDoRequest request,
-            @CurrentMember MemberDto memberDto) {
+            @CurrentMember MemberDto memberDto
+    ) {
         return ResponseEntity.ok(toDoService.updateToDo(toDoId, request, memberDto));
     }
+
+    @Operation(summary = "할 일 삭제", description = "할 일 삭제 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "할 일 삭제 성공"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "삭제할 할 일이 없는 경우",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "할 일에 대해 삭제 권한이 없는 경우",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            )
+    })
+    @DeleteMapping("/todos/{toDoId}")
+    public ResponseEntity<Object> deleteToDo(
+            @Parameter(description = "할 일 ID", in = ParameterIn.PATH)
+            @PathVariable(value = "toDoId") Long toDoId,
+            @CurrentMember MemberDto memberDto
+    ) {
+        toDoService.deleteToDo(toDoId, memberDto);
+
+        return ResponseEntity.noContent().build();
+    }
+
 }

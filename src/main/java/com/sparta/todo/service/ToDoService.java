@@ -34,6 +34,13 @@ public class ToDoService {
         return ToDoResponse.from(todo);
     }
 
+    public ToDoResponse getToDo(Long toDoId) {
+        ToDo toDo = toDoRepository.findById(toDoId)
+                .orElseThrow(ToDoNotFoundException::new);
+
+        return ToDoResponse.from(toDo);
+    }
+
     public ToDoResponse updateToDo(Long toDoId, UpdateToDoRequest request, MemberDto memberDto) {
         ToDo toDo = toDoRepository.findById(toDoId)
                 .orElseThrow(ToDoNotFoundException::new);
@@ -44,16 +51,19 @@ public class ToDoService {
         return ToDoResponse.from(toDo);
     }
 
+    public void deleteToDo(Long toDoId, MemberDto memberDto) {
+        ToDo toDo = toDoRepository.findById(toDoId)
+                .orElseThrow(ToDoNotFoundException::new);
+
+        checkMember(toDo.getMember().getId(), memberDto.id());
+
+        toDoRepository.delete(toDo);
+    }
+
     private void checkMember(Long writeMemberId, Long currentMemberId) {
         if (!writeMemberId.equals(currentMemberId)) {
             throw new AccessDeniedException("해당 ToDo에 대한 권한이 없습니다.");
         }
     }
 
-    public ToDoResponse getToDo(Long toDoId) {
-        ToDo toDo = toDoRepository.findById(toDoId)
-                .orElseThrow(ToDoNotFoundException::new);
-
-        return ToDoResponse.from(toDo);
-    }
 }
