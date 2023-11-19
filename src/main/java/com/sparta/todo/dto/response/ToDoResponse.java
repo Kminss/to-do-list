@@ -6,7 +6,7 @@ import lombok.Builder;
 
 import java.time.LocalDateTime;
 
-public record CreateToDoResponse(
+public record ToDoResponse(
         @Schema(
                 description = "할 일 ID",
                 nullable = false,
@@ -39,11 +39,11 @@ public record CreateToDoResponse(
         LocalDateTime createdDateTime
 ) {
     @Builder
-    public CreateToDoResponse {
+    public ToDoResponse {
     }
 
-    public static CreateToDoResponse from(ToDo entity) {
-        return CreateToDoResponse.builder()
+    public static ToDoResponse from(ToDo entity) {
+        return ToDoResponse.builder()
                 .id(entity.getId())
                 .title(entity.getTitle())
                 .content(entity.getContent())

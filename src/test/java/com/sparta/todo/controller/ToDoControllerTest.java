@@ -5,7 +5,7 @@ import com.sparta.todo.config.PasswordEncoderConfig;
 import com.sparta.todo.domain.constant.MemberRole;
 import com.sparta.todo.dto.MemberDto;
 import com.sparta.todo.dto.request.CreateToDoRequest;
-import com.sparta.todo.dto.response.CreateToDoResponse;
+import com.sparta.todo.dto.response.ToDoResponse;
 import com.sparta.todo.security.CustomUserDetails;
 import com.sparta.todo.service.ToDoService;
 import org.junit.jupiter.api.DisplayName;
@@ -61,7 +61,7 @@ class ToDoControllerTest {
         CreateToDoRequest toDoRequest = new CreateToDoRequest("test title", "test content");
 
         given(toDoService.createToDo(toDoRequest, memberDto))
-                .willReturn(CreateToDoResponse.from(toDoRequest.toEntity(memberDto.toEntity(passwordEncoder))));
+                .willReturn(ToDoResponse.from(toDoRequest.toEntity(memberDto.toEntity(passwordEncoder))));
 
         //When
         ResultActions actions = mvc.perform(

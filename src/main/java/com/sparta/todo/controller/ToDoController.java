@@ -35,7 +35,7 @@ public class ToDoController {
             @ApiResponse(
                     responseCode = "201",
                     description = "할 일 생성 성공",
-                    content = @Content(schema = @Schema(implementation = CreateToDoResponse.class))
+                    content = @Content(schema = @Schema(implementation = ToDoResponse.class))
             ),
             @ApiResponse(
                     responseCode = "404",
@@ -44,7 +44,7 @@ public class ToDoController {
             )
     })
     @PostMapping("/todos")
-    public ResponseEntity<CreateToDoResponse> createToDo(@RequestBody CreateToDoRequest request, @CurrentMember MemberDto memberDto) {
+    public ResponseEntity<ToDoResponse> createToDo(@RequestBody CreateToDoRequest request, @CurrentMember MemberDto memberDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(toDoService.createToDo(request, memberDto));
     }
 
@@ -53,7 +53,7 @@ public class ToDoController {
             @ApiResponse(
                     responseCode = "200",
                     description = "할 일 수정 성공",
-                    content = @Content(schema = @Schema(implementation = CreateToDoResponse.class))
+                    content = @Content(schema = @Schema(implementation = ToDoResponse.class))
             ),
             @ApiResponse(
                     responseCode = "404",
@@ -67,12 +67,11 @@ public class ToDoController {
             )
     })
     @PutMapping("/todos/{toDoId}")
-    public ResponseEntity<UpdateToDoResponse> updateToDo(
+    public ResponseEntity<ToDoResponse> updateToDo(
             @Parameter(description = "할 일 ID", in = ParameterIn.PATH)
             @PathVariable(value = "toDoId") Long toDoId,
             @RequestBody UpdateToDoRequest request,
             @CurrentMember MemberDto memberDto) {
         return ResponseEntity.ok(toDoService.updateToDo(toDoId, request, memberDto));
     }
-
 }
