@@ -168,4 +168,9 @@ public class JwtProvider {
             logger.error(e.getMessage());
         }
     }
+
+    public Integer getRemainingTimeMin(Date expiration) {
+        Date now = new Date();
+        return Math.toIntExact((expiration.getTime() - now.getTime()) * 60 * 1000);
+    }
 }

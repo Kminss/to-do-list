@@ -11,6 +11,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+
 @Transactional
 @Service
 public class AuthService {
@@ -50,4 +52,19 @@ public class AuthService {
         redisUtils.saveKey("RefreshToken:" + username, 24 * 60, tokenDto.refreshToken());
     }
 
+    public void logout(HttpServletRequest request) {
+        String targetToken = jwtProvider.getTokenFromRequestHeader(request);
+
+        jwtProvider.validateToken(targetToken);
+
+        //토큰에서 username, expiration 추출
+        Claims claims = jwtProvider.getUserInfoFromToken(targetToken);
+        String username = claims.getSubject();
+        Date expiration = claims.getExpiration();
+        Integer remainingExpTime = jwtProvider.getRemainingTimeMin(expiration);
+
+        //redis에 refresh토큰 삭제, logout token 저장 -> 인가 필터에서 꺼내서 확인
+        redisUtils.deleteKey("RefreshToken:" + username);
+        redisUtils.saveKey("LogOut:" + username, remainingExpTime, targetToken);
+    }
 }
