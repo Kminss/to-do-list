@@ -7,7 +7,9 @@ import com.sparta.todo.dto.request.CreateToDoRequest;
 import com.sparta.todo.dto.request.SearchToDoCondition;
 import com.sparta.todo.dto.request.UpdateToDoRequest;
 import com.sparta.todo.dto.response.ToDoResponse;
+import com.sparta.todo.exception.AlreadyCompleteToDoException;
 import com.sparta.todo.exception.MemberNotFoundException;
+import com.sparta.todo.exception.NotCompleteToDoException;
 import com.sparta.todo.exception.ToDoNotFoundException;
 import com.sparta.todo.repository.MemberRepository;
 import com.sparta.todo.repository.ToDoRepository;
@@ -75,5 +77,30 @@ public class ToDoService {
 
         checkMember(toDo.getMember().getId(), memberDto.id(), ACCESS_DENIED_MESSAGE);
         toDoRepository.delete(toDo);
+    }
+
+    public void completeToDo(Long toDoId, MemberDto memberDto) {
+        ToDo toDo = toDoRepository.findById(toDoId)
+                .orElseThrow(ToDoNotFoundException::new);
+
+        checkMember(toDo.getMember().getId(), memberDto.id(), ACCESS_DENIED_MESSAGE);
+
+        if (toDo.isDone()) {
+            throw new AlreadyCompleteToDoException();
+        }
+        toDo.complete(true);
+    }
+
+    public void deleteCompleteToDo(Long toDoId, MemberDto memberDto) {
+        ToDo toDo = toDoRepository.findById(toDoId)
+                .orElseThrow(ToDoNotFoundException::new);
+
+        checkMember(toDo.getMember().getId(), memberDto.id(), ACCESS_DENIED_MESSAGE);
+
+        if (!toDo.isDone()) {
+            throw new NotCompleteToDoException();
+        }
+
+        toDo.complete(false);
     }
 }
