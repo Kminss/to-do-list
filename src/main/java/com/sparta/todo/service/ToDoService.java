@@ -4,6 +4,7 @@ import com.sparta.todo.domain.Member;
 import com.sparta.todo.domain.ToDo;
 import com.sparta.todo.dto.MemberDto;
 import com.sparta.todo.dto.request.CreateToDoRequest;
+import com.sparta.todo.dto.request.SearchToDoCondition;
 import com.sparta.todo.dto.request.UpdateToDoRequest;
 import com.sparta.todo.dto.response.ToDoResponse;
 import com.sparta.todo.exception.AccessDeniedException;
@@ -13,6 +14,8 @@ import com.sparta.todo.repository.MemberRepository;
 import com.sparta.todo.repository.ToDoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -66,4 +69,14 @@ public class ToDoService {
         }
     }
 
+    public List<ToDoResponse> searchToDos(SearchToDoCondition condition) {
+        List<ToDo> todos = toDoRepository.searchToDoBy(condition);
+        if (todos.isEmpty()) {
+            throw new ToDoNotFoundException();
+        }
+
+        return toDoRepository.searchToDoBy(condition).stream()
+                .map(ToDoResponse::from)
+                .toList();
+    }
 }
