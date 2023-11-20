@@ -4,6 +4,7 @@ import com.sparta.todo.jwt.JwtAuthenticationFilter;
 import com.sparta.todo.jwt.JwtAuthorizationFilter;
 import com.sparta.todo.jwt.JwtProvider;
 import com.sparta.todo.security.CustomUserDetailService;
+import com.sparta.todo.util.RedisUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
     private final JwtProvider jwtProvider;
+    private final RedisUtils redisUtils;
     private final CustomUserDetailService userDetailService;
     private final AuthenticationConfiguration authenticationConfiguration;
 
@@ -57,7 +59,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtProvider);
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtProvider, redisUtils);
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
     }
