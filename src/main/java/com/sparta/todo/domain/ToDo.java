@@ -24,7 +24,11 @@ public class ToDo extends BaseEntity{
 
     @ColumnDefault("false")
     @Column(name = "is_done", nullable = false)
-    private boolean isDone = false;
+    private boolean isDone;
+
+    @ColumnDefault("false")
+    @Column(name = "is_hidden", nullable = false)
+    private boolean isHidden;
 
     @JoinColumn(name = "member_id")
     @ManyToOne(optional = false)  //optional: 외래키 not null 제약조건
@@ -57,5 +61,8 @@ public class ToDo extends BaseEntity{
 
     public void complete(boolean isDone) {
         this.isDone = isDone;
+    }
+    public void hidden(boolean isHidden) {
+        this.isHidden = isHidden;
     }
 }
