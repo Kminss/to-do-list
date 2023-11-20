@@ -24,7 +24,14 @@ public class Comment extends BaseEntity{
     @Column(name = "content", length = 500)
     private String content;
 
+    public Comment(Member member, ToDo toDo, String content) {
+        this.member = member;
+        this.todo = toDo;
+        this.content = content;
+    }
 
 
-
+    public static Comment of(Member member, ToDo toDo, String content) {
+        return new Comment(member, toDo, content);
+    }
 }
