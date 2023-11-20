@@ -4,9 +4,9 @@ import com.sparta.todo.domain.Member;
 import com.sparta.todo.domain.ToDo;
 import com.sparta.todo.dto.MemberDto;
 import com.sparta.todo.dto.request.CreateToDoRequest;
+import com.sparta.todo.dto.request.SearchToDoCondition;
 import com.sparta.todo.dto.request.UpdateToDoRequest;
-import com.sparta.todo.dto.response.CreateToDoResponse;
-import com.sparta.todo.dto.response.UpdateToDoResponse;
+import com.sparta.todo.dto.response.ToDoResponse;
 import com.sparta.todo.exception.AccessDeniedException;
 import com.sparta.todo.exception.MemberNotFoundException;
 import com.sparta.todo.exception.ToDoNotFoundException;
@@ -14,6 +14,8 @@ import com.sparta.todo.repository.MemberRepository;
 import com.sparta.todo.repository.ToDoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -26,23 +28,39 @@ public class ToDoService {
         this.memberRepository = memberRepository;
     }
 
-    public CreateToDoResponse createToDo(CreateToDoRequest toDoRequest, MemberDto memberDto) {
+    public ToDoResponse createToDo(CreateToDoRequest toDoRequest, MemberDto memberDto) {
         Member member = memberRepository.findById(memberDto.id())
                 .orElseThrow(MemberNotFoundException::new);
 
         ToDo todo = toDoRepository.save(toDoRequest.toEntity((member)));
 
-        return CreateToDoResponse.from(todo);
+        return ToDoResponse.from(todo);
     }
 
-    public UpdateToDoResponse updateToDo(Long toDoId, UpdateToDoRequest request, MemberDto memberDto) {
+    public ToDoResponse getToDo(Long toDoId) {
+        ToDo toDo = toDoRepository.findById(toDoId)
+                .orElseThrow(ToDoNotFoundException::new);
+
+        return ToDoResponse.from(toDo);
+    }
+
+    public ToDoResponse updateToDo(Long toDoId, UpdateToDoRequest request, MemberDto memberDto) {
         ToDo toDo = toDoRepository.findById(toDoId)
                 .orElseThrow(ToDoNotFoundException::new);
 
         checkMember(toDo.getMember().getId(), memberDto.id());
         toDo.update(request);
 
-        return UpdateToDoResponse.from(toDo);
+        return ToDoResponse.from(toDo);
+    }
+
+    public void deleteToDo(Long toDoId, MemberDto memberDto) {
+        ToDo toDo = toDoRepository.findById(toDoId)
+                .orElseThrow(ToDoNotFoundException::new);
+
+        checkMember(toDo.getMember().getId(), memberDto.id());
+
+        toDoRepository.delete(toDo);
     }
 
     private void checkMember(Long writeMemberId, Long currentMemberId) {
@@ -51,4 +69,14 @@ public class ToDoService {
         }
     }
 
+    public List<ToDoResponse> searchToDos(SearchToDoCondition condition) {
+        List<ToDo> todos = toDoRepository.searchToDoBy(condition);
+        if (todos.isEmpty()) {
+            throw new ToDoNotFoundException();
+        }
+
+        return toDoRepository.searchToDoBy(condition).stream()
+                .map(ToDoResponse::from)
+                .toList();
+    }
 }
