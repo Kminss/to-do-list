@@ -29,11 +29,12 @@ import static com.sparta.todo.exception.ErrorCode.UNAUTHORIZED_MEMBER;
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtProvider jwtProvider;
     private final RedisUtils redisUtils;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
-    public JwtAuthenticationFilter(JwtProvider jwtProvider, RedisUtils redisUtils) {
+    public JwtAuthenticationFilter(JwtProvider jwtProvider, RedisUtils redisUtils, ObjectMapper objectMapper) {
         this.jwtProvider = jwtProvider;
         this.redisUtils = redisUtils;
+        this.objectMapper = objectMapper;
         setFilterProcessesUrl("/api/v1/auth/login");
     }
 

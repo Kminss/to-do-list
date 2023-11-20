@@ -1,8 +1,10 @@
 package com.sparta.todo.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.todo.jwt.JwtAuthenticationFilter;
 import com.sparta.todo.jwt.JwtAuthorizationFilter;
 import com.sparta.todo.jwt.JwtProvider;
+import com.sparta.todo.security.CustomAuthenticationEntryPoint;
 import com.sparta.todo.security.CustomUserDetailService;
 import com.sparta.todo.util.RedisUtils;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +17,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 @RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
@@ -25,6 +29,7 @@ public class SecurityConfig {
     private final RedisUtils redisUtils;
     private final CustomUserDetailService userDetailService;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final ObjectMapper objectMapper;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -44,6 +49,12 @@ public class SecurityConfig {
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 
+        http
+                .exceptionHandling(handle ->
+                        handle
+                                .authenticationEntryPoint(authenticationEntryPoint())
+                );
+
         // 필터 관리
         http.addFilterBefore(jwtAuthenticationFilter(), JwtAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -59,16 +70,20 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtProvider, redisUtils);
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtProvider, redisUtils, objectMapper);
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
     }
 
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(jwtProvider, userDetailService);
+        return new JwtAuthorizationFilter(jwtProvider, userDetailService, redisUtils);
     }
 
+    @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint(){
+        return new CustomAuthenticationEntryPoint(objectMapper);
+    }
 
     private static final String[] WHITE_LIST_URL = {
             "/api/v1/auth/**",
