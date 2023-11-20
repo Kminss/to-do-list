@@ -1,5 +1,6 @@
 package com.sparta.todo.domain;
 
+import com.sparta.todo.dto.request.CommentRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,5 +34,9 @@ public class Comment extends BaseEntity{
 
     public static Comment of(Member member, ToDo toDo, String content) {
         return new Comment(member, toDo, content);
+    }
+
+    public void update(CommentRequest request) {
+        this.content = request.content();
     }
 }

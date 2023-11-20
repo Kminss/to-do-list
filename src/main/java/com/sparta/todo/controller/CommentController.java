@@ -2,7 +2,7 @@ package com.sparta.todo.controller;
 
 import com.sparta.todo.annotaion.CurrentMember;
 import com.sparta.todo.dto.MemberDto;
-import com.sparta.todo.dto.request.CreateCommentRequest;
+import com.sparta.todo.dto.request.CommentRequest;
 import com.sparta.todo.dto.response.CommentResponse;
 import com.sparta.todo.dto.response.ErrorResponse;
 import com.sparta.todo.service.CommentService;
@@ -45,9 +45,34 @@ public class CommentController {
     public ResponseEntity<CommentResponse> createComment(
             @Parameter(description = "할 일 ID")
             @PathVariable("toDoId") Long toDoId,
-            @RequestBody CreateCommentRequest request,
+            @RequestBody CommentRequest request,
             @CurrentMember MemberDto memberDto
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.createComment(toDoId, request, memberDto));
+    }
+
+    @Operation(summary = "댓글 수정", description = "댓글 수정 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "댓글 수정 성공",
+                    content = @Content(schema = @Schema(implementation = CommentResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "수정할 댓글이 없는 경우",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            )
+    })
+    @PutMapping("/todos/{toDoId}/comments/{commentId}")
+    public ResponseEntity<CommentResponse> updateComment(
+            @Parameter(description = "할 일 ID")
+            @PathVariable("toDoId") Long toDoId,
+            @Parameter(description = "할 일 ID")
+            @PathVariable("commentId") Long commentId,
+            @RequestBody CommentRequest request,
+            @CurrentMember MemberDto memberDto
+    ) {
+        return ResponseEntity.ok(commentService.updateComment(commentId, request, memberDto));
     }
 }
