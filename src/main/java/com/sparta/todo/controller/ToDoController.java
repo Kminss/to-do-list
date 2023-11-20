@@ -6,12 +6,11 @@ import com.sparta.todo.dto.MemberDto;
 import com.sparta.todo.dto.request.CreateToDoRequest;
 import com.sparta.todo.dto.request.SearchToDoCondition;
 import com.sparta.todo.dto.request.UpdateToDoRequest;
-import com.sparta.todo.dto.response.ToDoResponse;
 import com.sparta.todo.dto.response.ErrorResponse;
+import com.sparta.todo.dto.response.ToDoResponse;
 import com.sparta.todo.service.ToDoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Tag(name = "할 일 API", description = "할 일 API")
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/todos")
 @RestController
 public class ToDoController {
     private final ToDoService toDoService;
@@ -47,7 +46,7 @@ public class ToDoController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    @PostMapping("/todos")
+    @PostMapping
     public ResponseEntity<ToDoResponse> createToDo(@RequestBody CreateToDoRequest request, @CurrentMember MemberDto memberDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(toDoService.createToDo(request, memberDto));
     }
@@ -65,7 +64,7 @@ public class ToDoController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    @GetMapping("/todos/{toDoId}")
+    @GetMapping("/{toDoId}")
     public ResponseEntity<ToDoResponse> getToDo(
             @Parameter(description = "할 일 ID")
             @PathVariable(value = "toDoId") Long toDoId
@@ -86,7 +85,7 @@ public class ToDoController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    @GetMapping("/todos")
+    @GetMapping
     public ResponseEntity<List<ToDoResponse>> searchToDos(
             @Parameter(name = "keyword", description = "검색어")
             @RequestParam(name = "keyword", required = false) String keyword,
@@ -118,7 +117,7 @@ public class ToDoController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    @PutMapping("/todos/{toDoId}")
+    @PutMapping("/{toDoId}")
     public ResponseEntity<ToDoResponse> updateToDo(
             @Parameter(description = "할 일 ID")
             @PathVariable(value = "toDoId") Long toDoId,
@@ -145,7 +144,7 @@ public class ToDoController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    @DeleteMapping("/todos/{toDoId}")
+    @DeleteMapping("/{toDoId}")
     public ResponseEntity<Object> deleteToDo(
             @Parameter(description = "할 일 ID")
             @PathVariable(value = "toDoId") Long toDoId,

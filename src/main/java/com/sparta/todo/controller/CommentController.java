@@ -18,7 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "댓글 API", description = "댓글 API")
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/todos/{toDoId}/comments")
 @RestController
 public class CommentController {
 
@@ -41,7 +41,7 @@ public class CommentController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    @PostMapping("/todos/{toDoId}/comments")
+    @PostMapping
     public ResponseEntity<CommentResponse> createComment(
             @Parameter(description = "할 일 ID")
             @PathVariable("toDoId") Long toDoId,
@@ -64,7 +64,7 @@ public class CommentController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    @PutMapping("/todos/{toDoId}/comments/{commentId}")
+    @PutMapping("/{commentId}")
     public ResponseEntity<CommentResponse> updateComment(
             @Parameter(description = "할 일 ID")
             @PathVariable("toDoId") Long toDoId,
@@ -76,3 +76,5 @@ public class CommentController {
         return ResponseEntity.ok(commentService.updateComment(commentId, request, memberDto));
     }
 }
+
+
