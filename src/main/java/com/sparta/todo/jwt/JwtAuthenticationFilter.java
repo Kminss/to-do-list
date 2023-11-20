@@ -7,7 +7,9 @@ import com.sparta.todo.domain.constant.MemberRole;
 import com.sparta.todo.dto.request.LoginRequest;
 import com.sparta.todo.dto.response.LoginResponse;
 import com.sparta.todo.dto.response.ErrorResponse;
+import com.sparta.todo.dto.response.TokenDto;
 import com.sparta.todo.security.CustomUserDetails;
+import com.sparta.todo.util.RedisUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,10 +28,12 @@ import static com.sparta.todo.exception.ErrorCode.UNAUTHORIZED_MEMBER;
 @Slf4j(topic = "로그인 인증")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtProvider jwtProvider;
+    private final RedisUtils redisUtils;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public JwtAuthenticationFilter(JwtProvider jwtProvider) {
+    public JwtAuthenticationFilter(JwtProvider jwtProvider, RedisUtils redisUtils) {
         this.jwtProvider = jwtProvider;
+        this.redisUtils = redisUtils;
         setFilterProcessesUrl("/api/v1/auth/login");
     }
 
@@ -57,9 +61,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String username = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
         MemberRole role = ((CustomUserDetails) authentication.getPrincipal()).getMemberDto().role();
 
-        String token = jwtProvider.createToken(username, role);
-        jwtProvider.setHeaderToken(token, response);
-
+        TokenDto tokenDto = jwtProvider.createToken(username, role);
+        jwtProvider.setTokenResponse(tokenDto, response);
+        redisUtils.saveKey("RefreshToken:" + username, 24 * 60, tokenDto.refreshToken());
         setResponseConfig(response);
         objectMapper.writeValue(response.getWriter(), LoginResponse.of());
     }
