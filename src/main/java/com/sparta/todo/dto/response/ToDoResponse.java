@@ -48,6 +48,10 @@ public record ToDoResponse(
                 .title(entity.getTitle())
                 .content(entity.getContent())
                 .username(entity.getMember().getUsername())
+                .comments(entity.getComments().stream()
+                        .map(CommentResponse::from)
+                        .collect(Collectors.toUnmodifiableSet()))
+                .isDone(entity.isDone())
                 .createdDateTime(entity.getCreatedDateTime())
                 .build();
     }
