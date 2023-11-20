@@ -155,4 +155,69 @@ public class ToDoController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "할 일 완료", description = "할 일 완료 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "할 일 완료 성공"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "완료할 할 일이 없는 경우",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "할 일에 대해 완료 권한이 없는 경우",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "할 일이 이미 완료처리된 경우",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+    })
+    @PostMapping("/{toDoId}/complete")
+    public ResponseEntity<Object> completeToDo(
+            @Parameter(description = "할 일 ID")
+            @PathVariable(value = "toDoId") Long toDoId,
+            @CurrentMember MemberDto memberDto
+    ) {
+        toDoService.completeToDo(toDoId, memberDto);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "할 일 완료 취소", description = "할 일 완료 취소 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "할 일 완료 취소 성공"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "완료 취소할 할 일이 없는 경우",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "할 일에 대해 완료 취소 권한이 없는 경우",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "할 일이 완료되어있지 않은 경우",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+    })
+    @DeleteMapping("/{toDoId}/complete")
+    public ResponseEntity<Object> deleteCompleteToDo(
+            @Parameter(description = "할 일 ID")
+            @PathVariable(value = "toDoId") Long toDoId,
+            @CurrentMember MemberDto memberDto
+    ) {
+        toDoService.deleteCompleteToDo(toDoId, memberDto);
+
+        return ResponseEntity.noContent().build();
+    }
 }

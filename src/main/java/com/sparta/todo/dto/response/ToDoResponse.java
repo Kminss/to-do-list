@@ -1,10 +1,13 @@
 package com.sparta.todo.dto.response;
 
 import com.sparta.todo.domain.ToDo;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public record ToDoResponse(
         @Schema(
@@ -31,12 +34,24 @@ public record ToDoResponse(
                 example = "username1"
         )
         String username,
+
+        @ArraySchema(schema = @Schema(implementation = CommentResponse.class))
+        Set<CommentResponse> comments,
+
+        @Schema(
+                description = "완료여부",
+                nullable = false,
+                example = "false",
+                allowableValues = {"true", "false"}
+        )
+        Boolean isDone,
         @Schema(
                 description = "작성일",
                 nullable = false,
                 example = "2023-11-18T01:26:23.982168"
         )
         LocalDateTime createdDateTime
+
 ) {
     @Builder
     public ToDoResponse {
