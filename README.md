@@ -1,6 +1,6 @@
 # to-do-list
 내일배움캠프 - Spring 숙련 과제
-SpringFramework를 활용하여 
+SpringFramework를 활용하여 To-Do List API 서버 구현하였습니다.
 
 ## ERD
 ---
