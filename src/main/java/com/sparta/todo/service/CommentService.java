@@ -41,12 +41,23 @@ public class CommentService {
     }
 
     public CommentResponse updateComment(Long commentId, CommentRequest request, MemberDto memberDto) {
-        Comment comment = commentRepository.findById(commentId)
-                        .orElseThrow(CommentNotFoundException::new);
+        Comment comment = findComment(commentId);
 
         checkMember(comment.getMember().getId(), memberDto.id(), ACCESS_DENIED_MESSAGE);
         comment.update(request);
 
         return CommentResponse.from(comment);
+    }
+
+    public void deleteComment(Long commentId, MemberDto memberDto) {
+        Comment comment = findComment(commentId);
+
+        checkMember(comment.getMember().getId(), memberDto.id(), ACCESS_DENIED_MESSAGE);
+        commentRepository.delete(comment);
+    }
+
+    public Comment findComment(Long commentId) {
+        return  commentRepository.findById(commentId)
+                .orElseThrow(CommentNotFoundException::new);
     }
 }

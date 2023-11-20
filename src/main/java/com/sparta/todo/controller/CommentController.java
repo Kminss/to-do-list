@@ -59,6 +59,11 @@ public class CommentController {
                     content = @Content(schema = @Schema(implementation = CommentResponse.class))
             ),
             @ApiResponse(
+                    responseCode = "403",
+                    description = "댓글에 대해 수정 권한이 없는 경우",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
                     responseCode = "404",
                     description = "수정할 댓글이 없는 경우",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))
@@ -68,12 +73,42 @@ public class CommentController {
     public ResponseEntity<CommentResponse> updateComment(
             @Parameter(description = "할 일 ID")
             @PathVariable("toDoId") Long toDoId,
-            @Parameter(description = "할 일 ID")
+            @Parameter(description = "댓글 ID")
             @PathVariable("commentId") Long commentId,
             @RequestBody CommentRequest request,
             @CurrentMember MemberDto memberDto
     ) {
         return ResponseEntity.ok(commentService.updateComment(commentId, request, memberDto));
+    }
+
+
+    @Operation(summary = "댓글 삭제", description = "댓글 삭제 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "댓글 삭제 성공"
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "댓글에 대해 삭제 권한이 없는 경우",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "삭제할 댓글이 없는 경우",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            )
+    })
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<Object> deleteComment(
+            @Parameter(description = "할 일 ID")
+            @PathVariable("toDoId") Long toDoId,
+            @Parameter(description = "댓글 ID")
+            @PathVariable("commentId") Long commentId,
+            @CurrentMember MemberDto memberDto
+    ) {
+        commentService.deleteComment(commentId, memberDto);
+        return ResponseEntity.noContent().build();
     }
 }
 
