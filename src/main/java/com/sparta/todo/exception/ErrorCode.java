@@ -27,11 +27,13 @@ public enum ErrorCode {
     VALUE_NOT_FOUND(NOT_FOUND, "요청한 값을 찾을 수 없습니다."),
     TO_DO_NOT_FOUND(NOT_FOUND, "할 일을 찾을 수 없습니다."),
     COMMENT_NOT_FOUND(NOT_FOUND, "댓글을 찾을 수 없습니다."),
-    TO_DO_COMPLETE_NOT_FOUND(NOT_FOUND, "할 일이 완료처리 되어있지 않습니다."),
+    TO_DO_COMPLETE_NOT_FOUND(NOT_FOUND, "할 일 완료처리가 되어있지 않습니다."),
+    TO_DO_HIDDEN_NOT_FOUND(NOT_FOUND, "할 일 비공개처리가 되어있지 않습니다."),
 
     /* 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
     DUPLICATE_RESOURCE(CONFLICT, "데이터가 이미 존재합니다"),
     ALREADY_COMPLETE_TO_DO(CONFLICT, "이미 완료 처리된 할 일입니다."),
+    ALREADY_HIDDEN_TO_DO(CONFLICT, "이미 비공개 처리된 할 일입니다."),
     ALREADY_EXIST_MEMBER(CONFLICT, "이미 존재하는 회원입니다."),
 
 

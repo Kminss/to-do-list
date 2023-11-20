@@ -89,14 +89,14 @@ public class ToDoController {
     public ResponseEntity<List<ToDoResponse>> searchToDos(
             @Parameter(name = "keyword", description = "검색어")
             @RequestParam(name = "keyword", required = false) String keyword,
-
             @Parameter(name = "searchType", description = "검색 종류", required = true)
-            @RequestParam(name = "searchType") String searchType
+            @RequestParam(name = "searchType") String searchType,
+            @CurrentMember MemberDto memberDto
     ) {
         SearchType type = SearchType.findMatchedEnum(searchType);
         SearchToDoCondition condition = SearchToDoCondition.of(type, keyword);
 
-        return ResponseEntity.ok(toDoService.searchToDos(condition));
+        return ResponseEntity.ok(toDoService.searchToDos(condition, memberDto));
     }
 
     @Operation(summary = "할 일 수정", description = "할 일 수정 API")
@@ -217,6 +217,72 @@ public class ToDoController {
             @CurrentMember MemberDto memberDto
     ) {
         toDoService.deleteCompleteToDo(toDoId, memberDto);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "할 일 비공개", description = "할 일 비공개 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "할 일 비공개 성공"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "비공개할 할 일이 없는 경우",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "할 일에 대해 비공개 권한이 없는 경우",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "할 일이 이미 비공개된 경우",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+    })
+    @PostMapping("/{toDoId}/hidden")
+    public ResponseEntity<Object> hiddenToDo(
+            @Parameter(description = "할 일 ID")
+            @PathVariable(value = "toDoId") Long toDoId,
+            @CurrentMember MemberDto memberDto
+    ) {
+        toDoService.hiddenToDo(toDoId, memberDto);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "할 일 비공개 취소", description = "할 일 비공개 취소 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "할 일 비공개 취소 성공"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "비공개 취소할 할 일이 없는 경우",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "할 일에 대해 비공개 취소 권한이 없는 경우",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "할 일이 비공개가 되어있지 않은 경우",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+    })
+    @DeleteMapping("/{toDoId}/hidden")
+    public ResponseEntity<Object> cancelHiddenToDo(
+            @Parameter(description = "할 일 ID")
+            @PathVariable(value = "toDoId") Long toDoId,
+            @CurrentMember MemberDto memberDto
+    ) {
+        toDoService.cancelHiddenToDo(toDoId, memberDto);
 
         return ResponseEntity.noContent().build();
     }

@@ -7,10 +7,7 @@ import com.sparta.todo.dto.request.CreateToDoRequest;
 import com.sparta.todo.dto.request.SearchToDoCondition;
 import com.sparta.todo.dto.request.UpdateToDoRequest;
 import com.sparta.todo.dto.response.ToDoResponse;
-import com.sparta.todo.exception.AlreadyCompleteToDoException;
-import com.sparta.todo.exception.MemberNotFoundException;
-import com.sparta.todo.exception.NotCompleteToDoException;
-import com.sparta.todo.exception.ToDoNotFoundException;
+import com.sparta.todo.exception.*;
 import com.sparta.todo.repository.MemberRepository;
 import com.sparta.todo.repository.ToDoRepository;
 import org.springframework.stereotype.Service;
@@ -23,7 +20,7 @@ import static com.sparta.todo.util.MemberUtils.checkMember;
 @Service
 @Transactional
 public class ToDoService {
-    private static final String ACCESS_DENIED_MESSAGE = "해당 ToDo에 대한 권한이 없습니다.";
+    private static final String ACCESS_DENIED_MESSAGE = "해당 할 일에 대한 권한이 없습니다.";
     private final ToDoRepository toDoRepository;
     private final MemberRepository memberRepository;
 
@@ -42,13 +39,13 @@ public class ToDoService {
     }
 
     @Transactional(readOnly = true)
-    public List<ToDoResponse> searchToDos(SearchToDoCondition condition) {
-        List<ToDo> todos = toDoRepository.searchToDoBy(condition);
+    public List<ToDoResponse> searchToDos(SearchToDoCondition condition, MemberDto memberDto) {
+        List<ToDo> todos = toDoRepository.searchToDoBy(condition, memberDto);
         if (todos.isEmpty()) {
             throw new ToDoNotFoundException();
         }
 
-        return toDoRepository.searchToDoBy(condition).stream()
+        return todos.stream()
                 .map(ToDoResponse::from)
                 .toList();
     }
@@ -102,5 +99,30 @@ public class ToDoService {
         }
 
         toDo.complete(false);
+    }
+
+    public void hiddenToDo(Long toDoId, MemberDto memberDto) {
+        ToDo toDo = toDoRepository.findById(toDoId)
+                .orElseThrow(ToDoNotFoundException::new);
+
+        checkMember(toDo.getMember().getId(), memberDto.id(), ACCESS_DENIED_MESSAGE);
+
+        if (toDo.isHidden()) {
+            throw new AlreadyHiddenToDoException();
+        }
+        toDo.hidden(true);
+    }
+
+    public void cancelHiddenToDo(Long toDoId, MemberDto memberDto) {
+        ToDo toDo = toDoRepository.findById(toDoId)
+                .orElseThrow(ToDoNotFoundException::new);
+
+        checkMember(toDo.getMember().getId(), memberDto.id(), ACCESS_DENIED_MESSAGE);
+
+        if (!toDo.isHidden()) {
+            throw new NotHiddenToDoException();
+        }
+
+        toDo.hidden(false);
     }
 }
