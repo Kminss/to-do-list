@@ -57,7 +57,7 @@ public class JwtProvider {
     public TokenDto createToken(String username, MemberRole role) {
         Date date = new Date();
 
-        String accessToken = BEARER_PREFIX +
+        String accessToken =
                 Jwts.builder()
                         .setSubject(username) // 사용자 식별자값(ID)
                         .claim(AUTHORIZATION_KEY, role) // 사용자 권한
@@ -66,7 +66,7 @@ public class JwtProvider {
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘
                         .compact();
 
-        String refreshToken = BEARER_PREFIX +
+        String refreshToken =
                 Jwts.builder()
                         .setSubject(username) // 사용자 식별자값(ID)
                         .claim(AUTHORIZATION_KEY, role) // 사용자 권한
@@ -126,7 +126,7 @@ public class JwtProvider {
 
 
     public void setHeaderAccessToken(String token, HttpServletResponse response) {
-        response.setHeader(AUTHORIZATION_HEADER, token);
+        response.setHeader(AUTHORIZATION_HEADER, BEARER_PREFIX + token);
         response.setStatus(HttpStatus.OK.value());
     }
 
@@ -147,7 +147,7 @@ public class JwtProvider {
                 }
             }
         }
-        return token;
+        return substringToken(token);
     }
 
     public void setTokenResponse(TokenDto tokenDto, HttpServletResponse response) {
@@ -155,11 +155,14 @@ public class JwtProvider {
         setCookieRefreshToken(tokenDto.refreshToken(), response);
 
     }
+
     public void setCookieRefreshToken(String token, HttpServletResponse res) {
         try {
-            token = URLEncoder.encode(token, "utf-8").replaceAll("\\+", "%20"); // Cookie Value 에는 공백이 불가능해서 encoding 진행
+            token = URLEncoder.encode(BEARER_PREFIX + token, "utf-8").replaceAll("\\+", "%20"); // Cookie Value 에는 공백이 불가능해서 encoding 진행
 
             Cookie cookie = new Cookie(REFRESH_TOKEN_HEADER, token); // Name-Value
+            cookie.setSecure(true);
+            cookie.setHttpOnly(true);
             cookie.setPath("/");
 
             // Response 객체에 Cookie 추가
@@ -171,6 +174,6 @@ public class JwtProvider {
 
     public Integer getRemainingTimeMin(Date expiration) {
         Date now = new Date();
-        return Math.toIntExact((expiration.getTime() - now.getTime()) * 60 * 1000);
+        return Math.toIntExact((expiration.getTime() - now.getTime()) / 60 / 1000);
     }
 }

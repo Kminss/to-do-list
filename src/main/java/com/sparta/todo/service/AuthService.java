@@ -10,12 +10,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 
 @Transactional
 @Service
 public class AuthService {
+    private static final String PREFIX_REFRESH_TOKEN = "RefreshToken:";
     private final JwtProvider jwtProvider;
     private final RedisUtils redisUtils;
 
@@ -37,10 +39,10 @@ public class AuthService {
         MemberRole role = MemberRole.valueOf((String) claims.get("auth"));
 
         //redis에서 refresh token 확인
-        String refreshToken = redisUtils.getKey(username);
+        String refreshToken = redisUtils.getKey(PREFIX_REFRESH_TOKEN + username);
 
         //refresh token 일치하는지 검증
-        if (!refreshToken.equals(targetToken)) {
+        if (!StringUtils.hasText(refreshToken) || !refreshToken.equals(targetToken)) {
             throw new InvalidRefreshTokenException();
         }
 
@@ -49,7 +51,7 @@ public class AuthService {
         jwtProvider.setTokenResponse(tokenDto, response);
 
         //재발급된 토큰 정보 저장
-        redisUtils.saveKey("RefreshToken:" + username, 24 * 60, tokenDto.refreshToken());
+        redisUtils.saveKey(PREFIX_REFRESH_TOKEN + username, 24 * 60, tokenDto.refreshToken());
     }
 
     public void logout(HttpServletRequest request) {
@@ -64,7 +66,7 @@ public class AuthService {
         Integer remainingExpTime = jwtProvider.getRemainingTimeMin(expiration);
 
         //redis에 refresh토큰 삭제, logout token 저장 -> 인가 필터에서 꺼내서 확인
-        redisUtils.deleteKey("RefreshToken:" + username);
-        redisUtils.saveKey("LogOut:" + username, remainingExpTime, targetToken);
+        redisUtils.deleteKey(PREFIX_REFRESH_TOKEN + username);
+        redisUtils.saveKey("Logout:" + username, remainingExpTime, targetToken);
     }
 }

@@ -37,7 +37,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             String logOutToken = redisUtils.getKey("Logout:" + info.getSubject());
 
             //Logout 토큰 검증
-            if (!StringUtils.hasText(logOutToken)) {
+            if (!StringUtils.hasText(logOutToken) || !tokenValue.equals(logOutToken)) {
                 setAuthentication(info.getSubject());
             }
         }
