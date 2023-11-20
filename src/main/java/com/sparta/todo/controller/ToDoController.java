@@ -67,7 +67,7 @@ public class ToDoController {
     })
     @GetMapping("/todos/{toDoId}")
     public ResponseEntity<ToDoResponse> getToDo(
-            @Parameter(description = "할 일 ID", in = ParameterIn.PATH)
+            @Parameter(description = "할 일 ID")
             @PathVariable(value = "toDoId") Long toDoId
             ) {
         return ResponseEntity.ok(toDoService.getToDo(toDoId));
@@ -120,7 +120,7 @@ public class ToDoController {
     })
     @PutMapping("/todos/{toDoId}")
     public ResponseEntity<ToDoResponse> updateToDo(
-            @Parameter(description = "할 일 ID", in = ParameterIn.PATH)
+            @Parameter(description = "할 일 ID")
             @PathVariable(value = "toDoId") Long toDoId,
             @RequestBody UpdateToDoRequest request,
             @CurrentMember MemberDto memberDto
@@ -147,7 +147,7 @@ public class ToDoController {
     })
     @DeleteMapping("/todos/{toDoId}")
     public ResponseEntity<Object> deleteToDo(
-            @Parameter(description = "할 일 ID", in = ParameterIn.PATH)
+            @Parameter(description = "할 일 ID")
             @PathVariable(value = "toDoId") Long toDoId,
             @CurrentMember MemberDto memberDto
     ) {

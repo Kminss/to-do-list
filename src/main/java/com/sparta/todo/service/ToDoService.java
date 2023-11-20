@@ -7,7 +7,6 @@ import com.sparta.todo.dto.request.CreateToDoRequest;
 import com.sparta.todo.dto.request.SearchToDoCondition;
 import com.sparta.todo.dto.request.UpdateToDoRequest;
 import com.sparta.todo.dto.response.ToDoResponse;
-import com.sparta.todo.exception.AccessDeniedException;
 import com.sparta.todo.exception.MemberNotFoundException;
 import com.sparta.todo.exception.ToDoNotFoundException;
 import com.sparta.todo.repository.MemberRepository;
@@ -17,9 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.sparta.todo.util.MemberUtils.checkMember;
+
 @Service
 @Transactional
 public class ToDoService {
+    private static final String ACCESS_DENIED_MESSAGE = "해당 ToDo에 대한 권한이 없습니다.";
     private final ToDoRepository toDoRepository;
     private final MemberRepository memberRepository;
 
@@ -37,6 +39,19 @@ public class ToDoService {
         return ToDoResponse.from(todo);
     }
 
+    @Transactional(readOnly = true)
+    public List<ToDoResponse> searchToDos(SearchToDoCondition condition) {
+        List<ToDo> todos = toDoRepository.searchToDoBy(condition);
+        if (todos.isEmpty()) {
+            throw new ToDoNotFoundException();
+        }
+
+        return toDoRepository.searchToDoBy(condition).stream()
+                .map(ToDoResponse::from)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public ToDoResponse getToDo(Long toDoId) {
         ToDo toDo = toDoRepository.findById(toDoId)
                 .orElseThrow(ToDoNotFoundException::new);
@@ -48,7 +63,7 @@ public class ToDoService {
         ToDo toDo = toDoRepository.findById(toDoId)
                 .orElseThrow(ToDoNotFoundException::new);
 
-        checkMember(toDo.getMember().getId(), memberDto.id());
+        checkMember(toDo.getMember().getId(), memberDto.id(), ACCESS_DENIED_MESSAGE);
         toDo.update(request);
 
         return ToDoResponse.from(toDo);
@@ -58,25 +73,7 @@ public class ToDoService {
         ToDo toDo = toDoRepository.findById(toDoId)
                 .orElseThrow(ToDoNotFoundException::new);
 
-        checkMember(toDo.getMember().getId(), memberDto.id());
-
+        checkMember(toDo.getMember().getId(), memberDto.id(), ACCESS_DENIED_MESSAGE);
         toDoRepository.delete(toDo);
-    }
-
-    private void checkMember(Long writeMemberId, Long currentMemberId) {
-        if (!writeMemberId.equals(currentMemberId)) {
-            throw new AccessDeniedException("해당 ToDo에 대한 권한이 없습니다.");
-        }
-    }
-
-    public List<ToDoResponse> searchToDos(SearchToDoCondition condition) {
-        List<ToDo> todos = toDoRepository.searchToDoBy(condition);
-        if (todos.isEmpty()) {
-            throw new ToDoNotFoundException();
-        }
-
-        return toDoRepository.searchToDoBy(condition).stream()
-                .map(ToDoResponse::from)
-                .toList();
     }
 }
