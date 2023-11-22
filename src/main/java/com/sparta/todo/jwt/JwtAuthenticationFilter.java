@@ -89,6 +89,5 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private void setResponseConfig(HttpServletResponse response) {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("utf-8");
-        response.setStatus(UNAUTHORIZED_MEMBER.getHttpStatus().value());
     }
 }
