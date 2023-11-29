@@ -1,0 +1,10 @@
+spring:
+  config:
+    activate:
+      on-profile: properties
+
+
+jwt:
+  secret.key: cHRrUVFSclNhUVRTWmJ0R2hLY1VaLTE5ajIyVTFyZUcxU2ZuNFR1d1plVDVFZTItVzI1ZWZOU3Q4QTM=
+  access-token-expiration: 86400000  #1시간
+  refresh-token-expiration: 604800000 #하루

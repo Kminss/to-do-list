@@ -5,27 +5,14 @@ logging:
     org.springframework.web.servlet: debug
     org.hibernate.type.descriptor.sql.BasicBinder: trace
 
+
 spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/todolist
-    username: root
-    password: root
-
-  jpa:
-    open-in-view: false
-    defer-datasource-initialization: true
-    hibernate.ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate.format_sql: true
-      hibernate.default_batch_fetch_size: 100
-
-  sql.init.mode: always
-
-  data:
-    redis:
-      host: localhost
-      port: 6379
+  profiles:
+    active: dev
+    group:
+      dev: properties
+      test: properties
+    default: local
 
 #Swagger 설정
 springdoc:
@@ -43,7 +30,4 @@ springdoc:
     - /api/**
   show-login-endpoint: true #Authentication Fillter end point 제공
 
-jwt:
-  secret.key: cHRrUVFSclNhUVRTWmJ0R2hLY1VaLTE5ajIyVTFyZUcxU2ZuNFR1d1plVDVFZTItVzI1ZWZOU3Q4QTM=
-  access-token-expiration: 86400000  #1시간
-  refresh-token-expiration: 604800000 #하루
+
