@@ -5,7 +5,10 @@ SpringFramework를 활용하여 To-Do List API 서버 구현하였습니다.
 
 ## 사용 기술
 - Java17
+- JPA
 - SpringBoot 3.1.5
+- Spring Security 6
+- Gradle 8.4
 - MySQL
 - Redis
 - Jwt
