@@ -3,6 +3,7 @@ package com.sparta.todo.service;
 import com.sparta.todo.domain.constant.MemberRole;
 import com.sparta.todo.dto.response.TokenDto;
 import com.sparta.todo.exception.InvalidRefreshTokenException;
+import com.sparta.todo.exception.InvalidTokenException;
 import com.sparta.todo.jwt.JwtProvider;
 import com.sparta.todo.util.RedisUtils;
 import io.jsonwebtoken.Claims;
@@ -31,7 +32,9 @@ public class AuthService {
         String targetToken = jwtProvider.getRefreshTokenFromCookie(request);
 
         //토큰 검증
-        jwtProvider.validateToken(targetToken);
+       if(!jwtProvider.validateToken(targetToken)) {
+           throw new InvalidRefreshTokenException();
+       }
 
         //토큰에서 username 추출
         Claims claims = jwtProvider.getUserInfoFromToken(targetToken);
@@ -57,7 +60,9 @@ public class AuthService {
     public void logout(HttpServletRequest request) {
         String targetToken = jwtProvider.getTokenFromRequestHeader(request);
 
-        jwtProvider.validateToken(targetToken);
+        if (!jwtProvider.validateToken(targetToken)) {
+            throw new InvalidTokenException();
+        }
 
         //토큰에서 username, expiration 추출
         Claims claims = jwtProvider.getUserInfoFromToken(targetToken);
