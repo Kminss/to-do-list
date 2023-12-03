@@ -40,7 +40,7 @@ public class ToDoRepositoryCustomImpl implements ToDoRepositoryCustom {
     }
 
     private Predicate searchKeyword(SearchType searchType, String searchKeyword) {
-        if (!StringUtils.hasText(searchKeyword)) {
+        if (!StringUtils.hasText(searchKeyword) || searchType == null) {
             return null;
         }
 
