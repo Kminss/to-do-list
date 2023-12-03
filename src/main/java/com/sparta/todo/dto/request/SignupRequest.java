@@ -2,6 +2,7 @@ package com.sparta.todo.dto.request;
 
 import com.sparta.todo.domain.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +17,7 @@ public record SignupRequest(
                 min = 4, max = 10,
                 message = "아이디는 4자리 이상 10자리 이하로 입력해야합니다."
         )
+        @NotBlank
         String username,
 
         @Schema(description = "로그인 비밀번호", nullable = false, example = "password12")
@@ -28,6 +30,7 @@ public record SignupRequest(
                 max = 15,
                 message = "비밀번호는 8자리 이상, 15자리 이하로 입력해야합니다."
         )
+        @NotBlank
         String password
 ) {
 
