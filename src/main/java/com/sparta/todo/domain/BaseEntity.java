@@ -3,6 +3,7 @@ package com.sparta.todo.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
+import lombok.Generated;
 import lombok.Getter;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedBy;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @ToString
+@Generated
 @EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
 public abstract class BaseEntity {
