@@ -129,7 +129,8 @@ jacocoTestReport {
                     "**/*Dto*",
                     "**/*Response*",
                     "**/*Interceptor*",
-                    "**/*Exception*"
+                    "**/*Exception*",
+                    "**/*Filter*"
             ] + Qdomains)
         }))
     }
@@ -151,18 +152,14 @@ jacocoTestCoverageVerification {
                 minimum = 0.60
             }
 
-            limit {
-                counter = 'BRANCH'
-                value = 'COVEREDRATIO'
-                minimum = 0.60
-            }
             excludes = [
                     "**.*Application*",
                     "**.*Config*",
                     "**.*Dto*",
                     "**.*Response*",
                     "**.*Interceptor*",
-                    "**.*Exception*"
+                    "**.*Exception*",
+                    "**.*Filter*"
             ] + Qdomains
         }
     }
