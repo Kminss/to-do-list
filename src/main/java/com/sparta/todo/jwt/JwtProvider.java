@@ -24,10 +24,13 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Generated;
+import lombok.RequiredArgsConstructor;
 
 @Component
 public class JwtProvider {
@@ -41,10 +44,10 @@ public class JwtProvider {
 
     // 토큰 만료시간
     @Value("${jwt.access-token-expiration}")
-    public Long accessTokenExpiration; // 60분
+    private Long accessTokenExpiration; // 60분
 
     @Value("${jwt.refresh-token-expiration}")
-    public Long refreshTokenExpiration; // 하루
+    private Long refreshTokenExpiration; // 하루
 
     @Value("${jwt.secret.key}") // Base64 Encode 한 SecretKey
     private String secretKey;
@@ -99,7 +102,7 @@ public class JwtProvider {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (SecurityException | MalformedJwtException e) {
+        } catch (SecurityException | MalformedJwtException  | SignatureException e) {
             logger.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
         } catch (ExpiredJwtException e) {
             logger.error("Expired JWT token, 만료된 JWT token 입니다.");
@@ -116,6 +119,7 @@ public class JwtProvider {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
+    @Generated
     public String decodeTokenString(String encodedToken) throws UnsupportedEncodingException {
         return URLDecoder.decode(encodedToken, "utf-8");
     }
@@ -132,7 +136,7 @@ public class JwtProvider {
     }
 
 
-    public void setHeaderAccessToken(String token, HttpServletResponse response) {
+    private void setHeaderAccessToken(String token, HttpServletResponse response) {
         response.setHeader(AUTHORIZATION_HEADER, BEARER_PREFIX + token);
         response.setStatus(HttpStatus.OK.value());
     }
@@ -163,7 +167,7 @@ public class JwtProvider {
 
     }
 
-    public void setCookieRefreshToken(String token, HttpServletResponse res) {
+    private void setCookieRefreshToken(String token, HttpServletResponse res) {
         try {
             token = URLEncoder.encode(BEARER_PREFIX + token, "utf-8").replaceAll("\\+", "%20"); // Cookie Value 에는 공백이 불가능해서 encoding 진행
 
@@ -179,6 +183,7 @@ public class JwtProvider {
         }
     }
 
+    @Generated
     public Integer getRemainingTimeMin(Date expiration) {
         Date now = new Date();
         return Math.toIntExact((expiration.getTime() - now.getTime()) / 60 / 1000);
