@@ -3,11 +3,11 @@ spring:
     activate:
       on-profile: test
 
+
   datasource:
-    url: jdbc:h2:mem:testdb;MODE=MySQL
     username: sa
     password:
-
+    url: jdbc:h2:mem:testdb;MODE=MySQL
   jpa:
     hibernate:
       ddl-auto: update
@@ -15,9 +15,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.MySQL8Dialect
     defer-datasource-initialization: true
 
+  h2:
+    console:
+      enabled: true
 
   data:
      redis:
